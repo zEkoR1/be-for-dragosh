@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine # Using a specific version of postgres
+    container_name: be_postgres_db
+    restart: always
+    environment:
+      POSTGRES_USER: myName
+      POSTGRES_PASSWORD: myPassword
+      POSTGRES_DB: be-for-dragosh
+    ports:
+      - "5432:5432" # Map host port 5432 to container port 5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data # Persist database data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U myName -d be-for-dragosh"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development # Use the development stage from the Dockerfile
+    container_name: be_for_dragosh_app
+    depends_on:
+      db:
+        condition: service_healthy # Wait for db to be healthy
+    ports:
+      - "3000:3000" # Map host port 3000 to container port 3000 (NestJS default)
+    volumes:
+      - .:/usr/src/app # Mount current directory to the app's working directory
+      - /usr/src/app/node_modules # Anonymous volume to prevent host node_modules from overwriting container's
+    environment:
+      DATABASE_URL: postgresql://myName:myPassword@db:5432/be-for-dragosh?schema=public
+      NODE_ENV: development
+      JWT_SECRET: yourSuperSecretKeyForJWTs123! # CHANGE THIS IN PRODUCTION!
+      JWT_ACCESS_TOKEN_EXPIRATION_SECONDS: 3600 # 1 hour
+      JWT_REFRESH_TOKEN_EXPIRATION_DAYS: 7    # 7 days
+      # For Google OAuth (if implemented)
+      # GOOGLE_CLIENT_ID: YOUR_GOOGLE_CLIENT_ID
+      # GOOGLE_CLIENT_SECRET: YOUR_GOOGLE_CLIENT_SECRET
+      # GOOGLE_CALLBACK_URL: http://localhost:3000/api/auth/google/callback
+      # FRONTEND_URL: http://localhost:3001 # Or your frontend's URL
+    # Override the CMD from Dockerfile for development to enable hot-reloading
+    command: npm run start:dev
+
+volumes:
+  postgres_data: # Named volume for PostgreSQL data persistence 
