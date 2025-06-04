@@ -4,15 +4,20 @@ import {
 import { ApiTags, ApiOperation, ApiBody, ApiResponse } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { Request, Response } from 'express';
-import { JwtAuthGuard } from './jwt-auth.guard';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { LoginDto } from './dto/login.dto';
-import { RegisterDto } from './dto/register.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  /**
+   *  Login
+   *
+   * @param body {LoginDto}
+   * @param res
+   */
   @Post('login')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Log in with username/email and password' })
@@ -26,6 +31,11 @@ export class AuthController {
     return this.authService.login(body.identity, body.password, res);
   }
 
+  /**
+   * Logout
+   *
+   * @param res
+   */
   @Post('logout')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Logout the current user' })
@@ -33,6 +43,12 @@ export class AuthController {
     return this.authService.logout(res);
   }
 
+  /**
+   * Refreshed token
+   *
+   * @param req
+   * @param res
+   */
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Refresh JWT tokens' })
@@ -41,6 +57,11 @@ export class AuthController {
     return this.authService.refreshTokens(token, res);
   }
 
+  /**
+   * Returns profile
+   *
+   * @param req
+   */
   @UseGuards(JwtAuthGuard)
   @Get('profile')
   @ApiOperation({ summary: 'Get current user profile (requires JWT)' })

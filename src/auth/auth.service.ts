@@ -27,8 +27,10 @@ export class AuthService {
     }
 
     const accessToken = this.jwtService.sign(
-        { userId: user.id },
-        { expiresIn: '1m' }
+        { userId: user.id,
+          isAdmin: user.isAdmin},
+        { expiresIn: '1m' },
+
     );    const refreshToken = randomBytes(64).toString('hex');
 
     const expiresAt = new Date();
@@ -39,7 +41,7 @@ export class AuthService {
     });
 
     this.setCookies(res, accessToken, refreshToken, expiresAt);
-    return { message: 'Login successful', user: { id: user.id, username: user.username } };
+    return { message: 'Login successful', user: { id: user.id, username: user.username, isAdmin: user.isAdmin } };
   }
 
   async refreshTokens(token: string, res: Response) {

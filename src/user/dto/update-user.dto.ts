@@ -16,9 +16,9 @@ export class UpdateUserDto {
   @IsString()
   @MinLength(6, { message: 'Password must be at least 6 characters long' })
   @MaxLength(50)
-  password?: string; // Handle with care - ensure it gets hashed if provided
+  password?: string;
 
   @IsOptional()
   @IsString()
   names?: string;
-} 
+}

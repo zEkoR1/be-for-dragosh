@@ -1,8 +1,8 @@
 import { Strategy } from 'passport-local';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException, Logger } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { User as PrismaUser } from '../../generated/prisma';
+import { AuthService } from '../auth.service';
+import { User as PrismaUser } from '../../../generated/prisma';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
@@ -28,4 +28,4 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     this.logger.log(`LocalStrategy validate: User validated successfully, returning user ID: ${result.id}`);
     return result;
   }
-} 
+}

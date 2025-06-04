@@ -7,6 +7,7 @@ import { Request } from 'express';
 export interface JwtPayload {
   userId: number;
   username: string;
+  isAdmin: boolean;
 }
 
 @Injectable()
@@ -33,7 +34,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     }
 
     return {
-      id: payload.userId,
+      id: payload.userId, username: payload.username, isAdmin: payload.isAdmin
     };
   }
 }
