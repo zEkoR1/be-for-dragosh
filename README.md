@@ -96,3 +96,57 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+
+
+# 📘 SECURE CLOUD STORAGE API
+
+[![NestJS](https://img.shields.io/badge/NestJS-v9.0.0-red)](https://nestjs.com/)  
+[![Node.js](https://img.shields.io/badge/Node.js-v18.0.0-green)](https://nodejs.org/)  
+[![Prisma](https://img.shields.io/badge/Prisma-v4.0.0-blue)](https://www.prisma.io/)  
+[![TypeScript](https://img.shields.io/badge/TypeScript-v4.9.0-blue)](https://www.typescriptlang.org/)
+
+A production-grade REST API for user management, built with NestJS, Prisma, and JWT authentication.  
+Administrators can manage all users, while regular users may view or modify only their own profile. Features include:
+
+- **JWT Authentication** via `/auth/token`
+- **Role-based Authorization** (admin vs. owner)
+- **CRUD operations** for User resources
+- **Pagination** support for listing users
+- **Secure password hashing** with bcrypt
+
+---
+
+## 🌟 Features
+
+1. **Authentication & Authorization**
+    - **`/auth/token`**: Issue a signed JWT to a valid user (email/username + password).
+    - **`JwtAuthGuard`**: Protects routes by verifying JWT in the `Authorization: Bearer ...` header.
+    - **`AdminGuard`**: Grants access only if `user.isAdmin === true`.
+    - **`AdminOrOwnerGuard`**: Allows admins to access any user, while regular users can access only their own profile.
+
+2. **User Management**
+    - **Create**: Register a new user (username, email, password, optional `names`, `isAdmin`).
+    - **Read (All)**: Admin-only endpoint to list users with pagination.
+    - **Read (Single)**: Admins or the user themselves can fetch a single profile by ID.
+    - **Update**: Admins can update any user; regular users can update only their own profile.
+    - **Delete**: Admins can delete any user; regular users can delete only their own account.
+
+3. **Pagination**
+    - Supports offset-based pagination on the “list all users” route:
+        - Query parameters: `page` (1-based) and `limit` (items per page).
+        - Response includes `data`, `total`, `page`, `limit`, and `offset`.
+
+---
+
+## 🛠 Tech Stack
+
+- **Framework**: [NestJS](https://nestjs.com/)
+- **ORM**: [Prisma](https://www.prisma.io/) (PostgreSQL, MySQL, SQLite, etc.)
+- **Database**: Your choice (PostgreSQL recommended)
+- **Language**: [TypeScript](https://www.typescriptlang.org/)
+- **Authentication**: [JSON Web Tokens](https://jwt.io/) (via `@nestjs/jwt`)
+- **Encryption**: [bcrypt](https://github.com/kelektiv/node.bcrypt.js) for password hashing
+- **Validation**: [`class-validator`](https://github.com/typestack/class-validator) & [`class-transformer`](https://github.com/typestack/class-transformer)
+- **API Documentation**: [Swagger](https://swagger.io/) (auto-generated via `@nestjs/swagger`)
+
+---

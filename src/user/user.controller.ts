@@ -9,10 +9,10 @@ import {
   UseGuards,
   ParseIntPipe,
   HttpCode,
-  HttpStatus,
+  HttpStatus, Query,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody } from '@nestjs/swagger';
-import { UserService } from './user.service';
+import {PaginatedUsers, UserService} from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -58,8 +58,11 @@ export class UserController {
   @ApiResponse({ status: 403, description: 'Forbidden: admin access required' })
   @UseGuards(JwtAuthGuard, AdminGuard)
   @Get()
-  async findAll(): Promise<Omit<PrismaUser, 'password'>[]> {
-    return this.userService.findAll();
+  async findAll(
+      @Query('page') page = 1,
+      @Query('limit') limit = 10,
+  ): Promise<PaginatedUsers> {
+    return this.userService.findAll(page, limit);
   }
 
   /**

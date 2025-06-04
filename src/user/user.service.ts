@@ -15,6 +15,15 @@ import * as bcrypt from 'bcrypt';
 /**
  * Service providing CRUD operations for User entities.
  */
+
+
+export interface PaginatedUsers {
+  data: Omit<PrismaUser, 'password'>[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
 @Injectable()
 export class UserService {
   constructor(
@@ -68,12 +77,28 @@ export class UserService {
    *
    * @returns A Promise resolving to an array of user objects without their password fields.
    */
-  async findAll(): Promise<Omit<PrismaUser, 'password'>[]> {
-    const users = await this.prisma.user.findMany();
-    return users.map(user => {
-      const { password, ...result } = user;
-      return result;
+  async findAll(
+      page: number = 1,
+      limit = 10,
+  ): Promise<PaginatedUsers> {
+    if (page < 1 || limit < 1) {
+      throw new BadRequestException('Page and limit must be positive integers');
+    }
+    const skip = (page - 1) * limit;
+
+    const total = await this.prisma.user.count();
+
+    const users = await this.prisma.user.findMany({
+      skip: skip,
+      take: parseInt(String(limit), 10),
     });
+
+    const data = users.map((u) => {
+      const { password, ...rest } = u;
+      return rest;
+    });
+
+    return { data, total, page, limit };
   }
 
   /**
